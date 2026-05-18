@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocFinder — Recupere documentos perdidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050b18;
+  --bg2: #0a1628;
+  --bg3: #0f1f3a;
+  --surface: #111d35;
+  --surface2: #162240;
+  --border: rgba(99,179,255,0.12);
+  --border2: rgba(99,179,255,0.22);
+  --blue: #3b82f6;
+  --blue-bright: #60a5fa;
+  --purple: #a855f7;
+  --purple-bright: #c084fc;
+  --cyan: #22d3ee;
+  --text: #f0f6ff;
+  --text2: #8ba8cc;
+  --text3: #4a6480;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --r: 12px;
+  --r2: 20px;
+  --r3: 8px;
+  --font: 'DM Sans', sans-serif;
+  --font-display: 'Syne', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;overflow-x:hidden}
+h1,h2,h3,h4,h5{font-family:var(--font-display);font-weight:700;line-height:1.2}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--surface2);border-radius:3px}
+
+/* UTILITY */
+.hidden{display:none!important}
+.flex{display:flex}
+.flex-col{display:flex;flex-direction:column}
+.items-center{align-items:center}
+.justify-center{justify-content:center}
+.justify-between{justify-content:space-between}
+.gap-1{gap:4px}.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}.gap-6{gap:24px}.gap-8{gap:32px}
+.w-full{width:100%}
+.text-center{text-align:center}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.text-lg{font-size:18px}
+.text-xl{font-size:22px}
+.text-2xl{font-size:28px}
+.text-3xl{font-size:36px}
+.text-4xl{font-size:48px}
+.text-muted{color:var(--text2)}
+.text-purple{color:var(--purple-bright)}
+.text-blue{color:var(--blue-bright)}
+.text-cyan{color:var(--cyan)}
+.text-success{color:var(--success)}
+.font-bold{font-weight:700}
+.font-medium{font-weight:500}
+.rounded{border-radius:var(--r)}
+.rounded-full{border-radius:999px}
+.p-4{padding:16px}.p-6{padding:24px}.p-8{padding:32px}
+.px-4{padding-left:16px;padding-right:16px}
+.py-2{padding-top:8px;padding-bottom:8px}
+.mb-2{margin-bottom:8px}.mb-4{margin-bottom:16px}.mb-6{margin-bottom:24px}.mb-8{margin-bottom:32px}
+.mt-2{margin-top:8px}.mt-4{margin-top:16px}.mt-6{margin-top:24px}
+
+/* GLASS */
+.glass{background:rgba(10,22,44,0.7);backdrop-filter:blur(20px);border:1px solid var(--border)}
+.glass2{background:rgba(17,29,53,0.8);backdrop-filter:blur(16px);border:1px solid var(--border)}
+
+/* GLOW */
+.glow-blue{box-shadow:0 0 24px rgba(59,130,246,0.15)}
+.glow-purple{box-shadow:0 0 24px rgba(168,85,247,0.15)}
+
+/* GRADIENT TEXT */
+.grad-text{background:linear-gradient(135deg, var(--blue-bright), var(--purple-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad-text-2{background:linear-gradient(135deg, var(--cyan), var(--blue-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* GRADIENT BG */
+.grad-bg{background:linear-gradient(135deg,var(--blue),var(--purple))}
+.grad-bg-subtle{background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(168,85,247,0.12))}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.3px}
+.badge-blue{background:rgba(59,130,246,0.15);color:var(--blue-bright);border:1px solid rgba(59,130,246,0.25)}
+.badge-green{background:rgba(16,185,129,0.12);color:var(--success);border:1px solid rgba(16,185,129,0.2)}
+.badge-purple{background:rgba(168,85,247,0.12);color:var(--purple-bright);border:1px solid rgba(168,85,247,0.2)}
+.badge-amber{background:rgba(245,158,11,0.12);color:var(--warning);border:1px solid rgba(245,158,11,0.2)}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--r3);font-family:var(--font);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
+.btn-primary:hover{opacity:.9;box-shadow:0 4px 20px rgba(100,120,255,.35)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.btn-outline:hover{border-color:var(--blue-bright);color:var(--blue-bright)}
+.btn-ghost{background:transparent;color:var(--text2);border:none}
+.btn-ghost:hover{color:var(--text)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn-lg{padding:14px 28px;font-size:16px;font-weight:600}
+.btn-xl{padding:18px 36px;font-size:17px;font-weight:700;border-radius:var(--r)}
+
+/* INPUT */
+.input-group{display:flex;flex-direction:column;gap:6px}
+.input-group label{font-size:13px;font-weight:500;color:var(--text2)}
+.input-wrap{position:relative;display:flex;align-items:center}
+.input-wrap svg,.input-wrap .input-icon{position:absolute;left:14px;color:var(--text3);pointer-events:none}
+.input{width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r3);color:var(--text);font-family:var(--font);font-size:14px;transition:all .2s;outline:none}
+.input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,0.12)}
+.input.has-icon{padding-left:42px}
+.input::placeholder{color:var(--text3)}
+.input-with-eye{padding-right:44px}
+.eye-btn{position:absolute;right:14px;background:none;border:none;cursor:pointer;color:var(--text3);display:flex;align-items:center}
+.eye-btn:hover{color:var(--text2)}
+.strength-bar{height:3px;border-radius:2px;background:var(--surface2);overflow:hidden;margin-top:4px}
+.strength-fill{height:100%;border-radius:2px;transition:all .4s}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:24px}
+.card:hover{border-color:var(--border2)}
+
+/* AVATAR */
+.avatar{border-radius:50%;object-fit:cover;background:var(--surface2)}
+.avatar-placeholder{border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;color:#fff}
+
+/* TOAST */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{display:flex;align-items:center;gap:12px;padding:14px 20px;border-radius:var(--r);background:var(--surface2);border:1px solid var(--border2);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:slideInToast .3s ease;min-width:280px;max-width:340px}
+.toast.removing{animation:slideOutToast .3s ease forwards}
+@keyframes slideInToast{from{opacity:0;transform:translateX(100%)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideOutToast{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(100%)}}
+.toast-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toast-success .toast-icon{background:rgba(16,185,129,0.15);color:var(--success)}
+.toast-error .toast-icon{background:rgba(239,68,68,0.15);color:var(--danger)}
+.toast-info .toast-icon{background:rgba(59,130,246,0.15);color:var(--blue-bright)}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:32px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* LOADING */
+.skeleton{background:linear-gradient(90deg,var(--surface) 25%,var(--surface2) 50%,var(--surface) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r3)}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* PROGRESS */
+.progress{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s ease;background:linear-gradient(90deg,var(--blue),var(--purple))}
+
+/* TOGGLE */
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--surface2);border-radius:12px;cursor:pointer;transition:.3s;border:1px solid var(--border)}
+.toggle input:checked + .toggle-track{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent}
+.toggle-track::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.3s}
+.toggle input:checked + .toggle-track::after{left:21px}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--border)}
+.tab{padding:10px 20px;cursor:pointer;font-size:14px;font-weight:500;color:var(--text3);border-bottom:2px solid transparent;transition:all .2s;margin-bottom:-1px}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--blue-bright);border-bottom-color:var(--blue-bright)}
+
+/* SIDEBAR */
+.sidebar{width:260px;min-height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 16px;position:fixed;left:0;top:0;z-index:100;transition:transform .3s}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:32px}
+.sidebar-logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:10px;display:flex;align-items:center;justify-content:center}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r3);cursor:pointer;font-size:14px;font-weight:500;color:var(--text2);transition:all .2s;text-decoration:none;margin-bottom:2px}
+.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item.active{background:rgba(59,130,246,0.12);color:var(--blue-bright)}
+.nav-item.active svg{color:var(--blue-bright)}
+.nav-item svg{color:var(--text3);flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px}
+
+/* MAIN CONTENT WITH SIDEBAR */
+.with-sidebar{margin-left:260px;min-height:100vh}
+
+/* NAVBAR */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,11,24,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:20px}
+.nav-logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:8px;display:flex;align-items:center;justify-content:center}
+
+/* SCANNER */
+.scan-frame{position:relative;width:280px;height:180px;border-radius:12px;overflow:hidden}
+.scan-corner{position:absolute;width:24px;height:24px;border-color:var(--blue-bright);border-style:solid}
+.scan-corner.tl{top:0;left:0;border-width:3px 0 0 3px;border-radius:8px 0 0 0}
+.scan-corner.tr{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 8px 0 0}
+.scan-corner.bl{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 8px}
+.scan-corner.br{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 8px 0}
+.scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:scanMove 2s linear infinite}
+@keyframes scanMove{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}}
+
+/* CHAT */
+.chat-msg{display:flex;gap:10px;margin-bottom:16px;animation:msgIn .25s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.chat-msg.me{flex-direction:row-reverse}
+.chat-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.5}
+.chat-msg.other .chat-bubble{background:var(--surface2);border-radius:4px 14px 14px 14px;color:var(--text)}
+.chat-msg.me .chat-bubble{background:linear-gradient(135deg,var(--blue),#5b4ed9);border-radius:14px 4px 14px 14px;color:#fff}
+.typing-dot{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:blink 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+/* STATS COUNTER */
+.stat-number{font-family:var(--font-display);font-size:42px;font-weight:800;line-height:1}
+
+/* BG EFFECTS */
+.bg-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+.anim-fade-up{animation:fadeUp .6s ease both}
+.anim-delay-1{animation-delay:.1s}
+.anim-delay-2{animation-delay:.2s}
+.anim-delay-3{animation-delay:.3s}
+.anim-delay-4{animation-delay:.4s}
+.anim-float{animation:float 4s ease-in-out infinite}
+
+/* PAGE WRAPPER */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* PROFILE PIC UPLOAD */
+.pic-upload{width:90px;height:90px;border-radius:50%;border:2px dashed var(--border2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .2s;background:var(--surface);overflow:hidden}
+.pic-upload:hover{border-color:var(--blue-bright)}
+.pic-upload img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+
+/* COMPATIBILITY BAR */
+.compat-bar{height:4px;border-radius:2px;background:var(--surface2);overflow:hidden}
+.compat-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--purple))}
+
+/* SCROLLABLE CONTENT */
+.scroll-content{overflow-y:auto;max-height:calc(100vh - 120px)}
+
+/* MOBILE NAV */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,22,44,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);z-index:300;padding:8px 0}
+.mobile-nav-items{display:flex;justify-content:space-around}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 16px;cursor:pointer;font-size:10px;color:var(--text3);transition:color .2s}
+.mobile-nav-item.active{color:var(--blue-bright)}
+.mobile-nav-item svg{width:20px;height:20px}
+
+/* SPLASH SCREEN */
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+#splash.hide{opacity:0;pointer-events:none}
+.splash-logo{width:72px;height:72px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:20px;display:flex;align-items:center;justify-content:center;animation:pulse 1.5s ease-in-out infinite}
+.splash-dots{display:flex;gap:6px;margin-top:32px}
+.splash-dot{width:6px;height:6px;background:var(--blue);border-radius:50%;animation:blink 1.2s infinite}
+.splash-dot:nth-child(2){animation-delay:.2s;background:var(--purple)}
+.splash-dot:nth-child(3){animation-delay:.4s;background:var(--cyan)}
+
+/* RESULT CARD */
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:20px;transition:all .3s;cursor:pointer}
+.result-card:hover{border-color:var(--blue-bright);transform:translateY(-2px);box-shadow:0 8px 32px rgba(59,130,246,0.15)}
+
+/* VERIFIED BADGE */
+.verified-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--success)}
+
+/* OFFLINE PILL */
+.status-dot{width:8px;height:8px;border-radius:50%}
+.status-online{background:var(--success);box-shadow:0 0 6px var(--success)}
+.status-offline{background:var(--text3)}
+
+/* SECTION */
+section{padding:80px 24px;position:relative;overflow:hidden}
+.container{max-width:1100px;margin:0 auto}
+
+/* HERO */
+.hero-section{padding-top:140px;padding-bottom:80px;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);font-size:13px;color:var(--blue-bright);margin-bottom:24px}
+.hero-title{font-size:clamp(36px,5vw,60px);line-height:1.1;margin-bottom:24px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:36px}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-top:48px;padding-top:32px;border-top:1px solid var(--border)}
+.hero-stat-num{font-family:var(--font-display);font-size:28px;font-weight:800}
+.hero-stat-label{font-size:13px;color:var(--text2)}
+.hero-visual{position:relative;display:flex;justify-content:center;align-items:center}
+.hero-card-float{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:20px;width:280px;animation:float 4s ease-in-out infinite}
+.hero-card-float2{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;width:220px;animation:float 4s ease-in-out infinite;animation-delay:.5s;position:absolute;bottom:-20px;right:-20px}
+
+/* HOW IT WORKS */
+.how-step{display:flex;align-items:flex-start;gap:16px}
+.how-step-num{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(168,85,247,0.15));border:1px solid rgba(100,120,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:18px;flex-shrink:0;color:var(--blue-bright)}
+
+/* TESTIMONIALS */
+.testimonial-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:28px}
+.stars{display:flex;gap:3px;color:#f59e0b;font-size:14px;margin-bottom:12px}
+
+/* FOOTER */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 24px 24px}
+
+/* DASHBOARD */
+.dash-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:center;justify-content:space-between}
+.dash-content{padding:32px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:24px;transition:all .2s}
+.stat-card:hover{border-color:var(--border2)}
+.stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.activity-item{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border)}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* SETTINGS */
+.settings-section{margin-bottom:32px}
+.settings-section h3{font-size:16px;font-weight:600;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border-bottom:none}
+.settings-row-info h4{font-size:14px;font-weight:500;margin-bottom:2px}
+.settings-row-info p{font-size:12px;color:var(--text2)}
+
+/* 404 */
+.page-404{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px}
+
+/* CHAT PAGE */
+.chat-sidebar{width:320px;background:var(--bg2);border-right:1px solid var(--border);height:100vh;overflow-y:auto;flex-shrink:0}
+.chat-contact{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s}
+.chat-contact:hover,.chat-contact.active{background:var(--surface)}
+.chat-main{flex:1;display:flex;flex-direction:column;height:100vh}
+.chat-header{padding:16px 24px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px}
+.chat-messages{flex:1;overflow-y:auto;padding:24px}
+.chat-input-bar{padding:16px 24px;background:var(--bg2);border-top:1px solid var(--border);display:flex;gap:12px;align-items:center}
+.chat-input{flex:1;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:999px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border .2s}
+.chat-input:focus{border-color:var(--blue)}
+
+/* SCAN PAGE */
+.scan-zone{border:2px dashed var(--border2);border-radius:var(--r2);padding:48px 32px;text-align:center;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+.scan-zone:hover,.scan-zone.drag-over{border-color:var(--blue-bright);background:rgba(59,130,246,0.05)}
+.scan-zone input[type=file]{display:none}
+.scanner-overlay{position:relative;width:280px;height:180px;margin:0 auto}
+.scanner-bg{width:100%;height:100%;background:var(--surface);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+.hero-grid{grid-template-columns:1fr;gap:40px}
+.hero-visual{display:none}
+.with-sidebar{margin-left:0}
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.mobile-nav{display:block}
+}
+@media(max-width:600px){
+.hero-section{padding-top:100px}
+.hero-stats{grid-template-columns:1fr 1fr}
+.hero-title{font-size:32px}
+.chat-sidebar{display:none}
+.chat-sidebar.active{display:flex;flex-direction:column;position:fixed;inset:0;z-index:50}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-logo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <path d="M6 10h24M6 18h16M6 26h20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="27" cy="25" r="7" stroke="white" stroke-width="2"/>
+      <path d="M32 30l3 3" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <p style="margin-top:20px;font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-0.5px">DocFinder</p>
+  <p class="text-muted text-sm" style="margin-top:6px">Carregando...</p>
+  <div class="splash-dots" style="margin-top:28px">
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ======================== PAGE: HOME ======================== -->
+<div id="page-home" class="page active">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo" onclick="showPage('home')" style="cursor:pointer">
+      <div class="nav-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 36 36" fill="none">
+          <path d="M6 10h24M6 18h16M6 26h20" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="27" cy="25" r="7" stroke="white" stroke-width="2"/>
+          <path d="M32 30l3 3" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      DocFinder
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="btn btn-ghost btn-sm hidden" id="nav-scan-btn" onclick="showPage('scan')" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Escanear
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="showPage('login')">Entrar</button>
+      <button class="btn btn-primary btn-sm" onclick="showPage('register')">Cadastrar</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-section" style="padding:0">
+    <div class="bg-orb" style="width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,0.12),transparent 70%);top:-200px;left:-200px"></div>
+    <div class="bg-orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(168,85,247,0.1),transparent 70%);bottom:-100px;right:-100px"></div>
+    <div class="container" style="padding:140px 24px 80px">
+      <div class="hero-grid">
+        <div class="anim-fade-up">
+          <div class="hero-badge">
+            <div style="width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 1.5s infinite"></div>
+            IA de Reconhecimento Ativa
+          </div>
+          <h1 class="hero-title">
+            Encontrou um<br>
+            <span class="grad-text">documento perdido?</span><br>
+            Devolva com segurança.
+          </h1>
+          <p style="font-size:17px;color:var(--text2);line-height:1.7;max-width:480px">
+            Nossa IA analisa documentos encontrados e conecta você ao dono com total privacidade e segurança. Simples, rápido e confiável.
+          </p>
+          <div class="hero-cta">
+            <button class="btn btn-primary btn-xl" onclick="showPage('login')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Escanear Documento
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="document.getElementById('how-works').scrollIntoView({behavior:'smooth'})">
+              Como funciona
+            </button>
+          </div>
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-num grad-text" id="counter-1">0</div>
+              <div class="hero-stat-label">documentos recuperados</div>
+            </div>
+            <div>
+              <div class="hero-stat-num grad-text-2" id="counter-2">0</div>
+              <div class="hero-stat-label">famílias ajudadas</div>
+            </div>
+            <div>
+              <div class="hero-stat-num" style="color:var(--success)" id="counter-3">0%</div>
+              <div class="hero-stat-label">taxa de sucesso</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual anim-fade-up anim-delay-3">
+          <div style="position:relative">
+            <div class="hero-card-float glow-blue">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="avatar-placeholder" style="width:44px;height:44px;font-size:16px">JV</div>
+                <div>
+                  <p class="font-medium" style="font-size:15px">João Victor S.</p>
+                  <p class="text-muted text-sm flex items-center gap-2">
+                    <span class="status-dot status-online"></span> Online agora
+                  </p>
+                </div>
+                <span class="badge badge-green" style="margin-left:auto">✓ 98%</span>
+              </div>
+              <div style="background:var(--bg3);border-radius:var(--r3);padding:12px;font-size:12px;color:var(--text2)">
+                <div class="flex justify-between mb-2"><span>Documento</span><span class="text-blue">CNH detectada</span></div>
+                <div class="flex justify-between mb-2"><span>Cidade</span><span>Maringá/PR</span></div>
+                <div class="flex justify-between"><span>Contato</span><span>(44) 9****-5678</span></div>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <button class="btn btn-primary btn-sm w-full">Entrar em contato</button>
+              </div>
+            </div>
+            <div class="hero-card-float2 glow-purple" style="box-shadow:0 0 24px rgba(168,85,247,0.15)">
+              <div class="flex items-center gap-2 mb-3">
+                <div style="width:8px;height:8px;background:var(--cyan);border-radius:50%;animation:pulse 1.5s infinite"></div>
+                <span class="text-xs font-medium text-cyan">IA analisando...</span>
+              </div>
+              <div class="progress mb-2"><div class="progress-fill" style="width:72%"></div></div>
+              <p class="text-xs text-muted">Nome identificado: João V. Santos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-works" style="padding:80px 24px;background:var(--bg2)">
+    <div class="container">
+      <div class="text-center mb-8">
+        <span class="badge badge-purple mb-4">Como funciona</span>
+        <h2 style="font-size:40px;margin-bottom:12px">Simples em <span class="grad-text">4 passos</span></h2>
+        <p class="text-muted" style="max-width:500px;margin:0 auto">Nossa tecnologia cuida de tudo. Você só precisa de um celular e 2 minutos.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-top:48px">
+        <div class="card anim-fade-up">
+          <div class="how-step-num mb-4" style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(34,211,238,0.15));border:1px solid rgba(59,130,246,0.3);border-radius:14px;font-size:20px;font-family:var(--font-display);font-weight:800;color:var(--blue-bright)">1</div>
+          <h3 style="font-size:17px;margin-bottom:8px">Tire uma foto</h3>
+          <p class="text-muted text-sm">Use a câmera do celular ou faça upload de uma imagem do documento encontrado.</p>
+        </div>
+        <div class="card anim-fade-up anim-delay-1">
+          <div style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:linear-gradient(135deg,rgba(168,85,247,0.15),rgba(59,130,246,0.15));border:1px solid rgba(168,85,247,0.3);border-radius:14px;font-size:20px;font-family:var(--font-display);font-weight:800;color:var(--purple-bright);margin-bottom:16px">2</div>
+          <h3 style="font-size:17px;margin-bottom:8px">IA identifica</h3>
+          <p class="text-muted text-sm">Nossa IA com OCR avançado extrai o nome, tipo e dados do documento automaticamente.</p>
+        </div>
+        <div class="card anim-fade-up anim-delay-2">
+          <div style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:linear-gradient(135deg,rgba(34,211,238,0.15),rgba(168,85,247,0.15));border:1px solid rgba(34,211,238,0.3);border-radius:14px;font-size:20px;font-family:var(--font-display);font-weight:800;color:var(--cyan);margin-bottom:16px">3</div>
+          <h3 style="font-size:17px;margin-bottom:8px">Encontre o dono</h3>
+          <p class="text-muted text-sm">O sistema busca perfis compatíveis com o nome identificado no nosso banco de dados.</p>
+        </div>
+        <div class="card anim-fade-up anim-delay-3">
+          <div style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(59,130,246,0.15));border:1px solid rgba(16,185,129,0.3);border-radius:14px;font-size:20px;font-family:var(--font-display);font-weight:800;color:var(--success);margin-bottom:16px">4</div>
+          <h3 style="font-size:17px;margin-bottom:8px">Entre em contato</h3>
+          <p class="text-muted text-sm">Contacte o dono com segurança através do nosso chat protegido. Sem expor dados.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section style="padding:80px 24px">
+    <div class="container">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px">
+        <div class="card text-center" style="background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(168,85,247,0.08))">
+          <div class="stat-number grad-text">48.2k</div>
+          <p class="text-muted mt-2">documentos cadastrados</p>
+        </div>
+        <div class="card text-center" style="background:linear-gradient(135deg,rgba(34,211,238,0.08),rgba(59,130,246,0.08))">
+          <div class="stat-number grad-text-2">12.7k</div>
+          <p class="text-muted mt-2">documentos recuperados</p>
+        </div>
+        <div class="card text-center" style="background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(16,185,129,0.08))">
+          <div class="stat-number" style="color:var(--success)">94%</div>
+          <p class="text-muted mt-2">taxa de sucesso</p>
+        </div>
+        <div class="card text-center" style="background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(168,85,247,0.08))">
+          <div class="stat-number" style="color:var(--warning)">4.9★</div>
+          <p class="text-muted mt-2">avaliação média</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section style="padding:80px 24px;background:var(--bg2)">
+    <div class="container">
+      <div class="text-center mb-8">
+        <h2 style="font-size:36px;margin-bottom:12px">O que dizem nossos <span class="grad-text">usuários</span></h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="text-muted" style="font-size:15px;line-height:1.7;margin-bottom:16px">"Encontrei uma carteira no metrô e em 5 minutos já tinha contactado o dono. Aplicativo incrível! O cara ficou super agradecido."</p>
+          <div class="flex items-center gap-3">
+            <div class="avatar-placeholder" style="width:38px;height:38px;font-size:13px">MF</div>
+            <div><p class="font-medium text-sm">Mariana F.</p><p class="text-muted text-xs">São Paulo, SP</p></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="text-muted" style="font-size:15px;line-height:1.7;margin-bottom:16px">"Perdi minha CNH e alguém me encontrou pelo DocFinder. Em menos de 24h já tinha meu documento de volta. Salvou minha vida!"</p>
+          <div class="flex items-center gap-3">
+            <div class="avatar-placeholder" style="width:38px;height:38px;font-size:13px;background:linear-gradient(135deg,var(--purple),var(--cyan))">RC</div>
+            <div><p class="font-medium text-sm">Rafael C.</p><p class="text-muted text-xs">Curitiba, PR</p></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <p class="text-muted" style="font-size:15px;line-height:1.7;margin-bottom:16px">"A privacidade é o diferencial. Consigo ajudar as pessoas sem expor meus dados nem os delas. Super seguro e profissional."</p>
+          <div class="flex items-center gap-3">
+            <div class="avatar-placeholder" style="width:38px;height:38px;font-size:13px;background:linear-gradient(135deg,var(--cyan),var(--success))">AL</div>
+            <div><p class="font-medium text-sm">Ana L.</p><p class="text-muted text-xs">Belo Horizonte, MG</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px">
+        <div>
+          <div class="nav-logo mb-4">
+            <div class="nav-logo-mark"><svg width="16" height="16" viewBox="0 0 36 36" fill="none"><path d="M6 10h24M6 18h16M6 26h20" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="27" cy="25" r="7" stroke="white" stroke-width="2"/><path d="M32 30l3 3" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+            DocFinder
+          </div>
+          <p class="text-muted text-sm" style="max-width:240px;line-height:1.7">Ajudando pessoas a recuperar documentos perdidos com tecnologia e segurança.</p>
+        </div>
+        <div>
+          <p class="font-medium mb-4" style="font-size:14px">Produto</p>
+          <div class="flex-col gap-3">
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Como funciona</a>
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Segurança</a>
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Privacidade</a>
+          </div>
+        </div>
+        <div>
+          <p class="font-medium mb-4" style="font-size:14px">Empresa</p>
+          <div class="flex-col gap-3">
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Sobre</a>
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Blog</a>
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Contato</a>
+          </div>
+        </div>
+        <div>
+          <p class="font-medium mb-4" style="font-size:14px">Legal</p>
+          <div class="flex-col gap-3">
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Termos de Uso</a>
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">Política de Privacidade</a>
+            <a href="#" class="text-muted text-sm" style="text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text2)'">LGPD</a>
+          </div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <p class="text-muted text-sm">© 2025 DocFinder. Todos os direitos reservados.</p>
+        <div class="flex gap-3">
+          <span class="badge badge-green">🔒 LGPD Compliant</span>
+          <span class="badge badge-blue">⚡ IA Segura</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======================== PAGE: LOGIN ======================== -->
+<div id="page-login" class="page">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden">
+    <div class="bg-orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,0.1),transparent);top:-100px;left:-200px"></div>
+    <div class="bg-orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,0.08),transparent);bottom:-100px;right:-100px"></div>
+    <div style="width:100%;max-width:420px;position:relative;z-index:1">
+      <div class="text-center mb-6">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:16px;margin-bottom:20px">
+          <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><path d="M6 10h24M6 18h16M6 26h20" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="27" cy="25" r="7" stroke="white" stroke-width="2"/><path d="M32 30l3 3" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <h1 style="font-size:28px;margin-bottom:6px">Bem-vindo de volta</h1>
+        <p class="text-muted">Entre na sua conta DocFinder</p>
+      </div>
+      
+      <!-- SOCIAL LOGIN -->
+      <div class="flex gap-3 mb-6">
+        <button class="btn btn-outline w-full" onclick="showToast('Login social não disponível na demo','info')" style="flex:1;justify-content:center">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Google
+        </button>
+        <button class="btn btn-outline w-full" onclick="showToast('Login social não disponível na demo','info')" style="flex:1;justify-content:center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Apple
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 mb-6">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span class="text-muted text-xs">ou continue com email</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+
+      <div class="card" style="padding:28px">
+        <div class="input-group mb-4">
+          <label>Email</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+            <input class="input has-icon" type="email" placeholder="seu@email.com" id="login-email">
+          </div>
+        </div>
+        <div class="input-group mb-6">
+          <label>Senha</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input class="input has-icon input-with-eye" type="password" placeholder="••••••••" id="login-pass">
+            <button class="eye-btn" onclick="togglePass('login-pass')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn-primary w-full btn-lg" style="justify-content:center" onclick="doLogin()">Entrar</button>
+        <button class="btn btn-ghost w-full btn-sm" style="justify-content:center;margin-top:8px" onclick="showToast('Email de recuperação enviado!','success')">Esqueci minha senha</button>
+      </div>
+      <p class="text-center text-muted text-sm mt-4">Não tem conta? <a href="#" onclick="showPage('register')" style="color:var(--blue-bright);text-decoration:none">Cadastre-se grátis</a></p>
+      <button class="btn btn-ghost btn-sm" style="margin-top:16px;display:flex;align-items:center;gap:6px" onclick="showPage('home')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar ao início
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: REGISTER ======================== -->
+<div id="page-register" class="page">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden">
+    <div class="bg-orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(168,85,247,0.1),transparent);top:-100px;right:-200px"></div>
+    <div style="width:100%;max-width:480px;position:relative;z-index:1;padding:40px 0">
+      <div class="text-center mb-6">
+        <h1 style="font-size:28px;margin-bottom:6px">Criar conta</h1>
+        <p class="text-muted">Cadastre seu perfil para ser encontrado</p>
+      </div>
+      <div class="card" style="padding:32px">
+        <!-- PHOTO UPLOAD -->
+        <div class="flex items-center gap-16 mb-6">
+          <div>
+            <div class="pic-upload" id="pic-upload" onclick="triggerPicUpload()">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+              <span class="text-xs text-muted">Foto</span>
+            </div>
+            <input type="file" id="pic-input" accept="image/*" style="display:none" onchange="previewPic(this)">
+          </div>
+          <div style="flex:1">
+            <div class="input-group">
+              <label>Nome completo</label>
+              <input class="input" type="text" placeholder="Seu nome completo">
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="input-group">
+            <label>Email</label>
+            <div class="input-wrap">
+              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+              <input class="input has-icon" type="email" placeholder="email@email.com">
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Telefone</label>
+            <div class="input-wrap">
+              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012.18 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.1a16 16 0 006 6l.62-.62a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              <input class="input has-icon" type="tel" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="input-group">
+            <label>Data de nascimento</label>
+            <input class="input" type="date">
+          </div>
+          <div class="input-group">
+            <label>CPF</label>
+            <input class="input" type="text" placeholder="000.000.000-00">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="input-group">
+            <label>Cidade</label>
+            <input class="input" type="text" placeholder="Sua cidade">
+          </div>
+          <div class="input-group">
+            <label>Estado</label>
+            <select class="input" style="cursor:pointer">
+              <option value="">UF</option>
+              <option>SP</option><option>RJ</option><option>MG</option><option>PR</option>
+              <option>RS</option><option>SC</option><option>BA</option><option>GO</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group mb-2">
+          <label>Senha</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input class="input has-icon input-with-eye" type="password" placeholder="Mínimo 8 caracteres" id="reg-pass" oninput="checkStrength(this.value)">
+            <button class="eye-btn" onclick="togglePass('reg-pass')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:0%"></div></div>
+          <span class="text-xs text-muted" id="strength-label">Digite uma senha</span>
+        </div>
+        <button class="btn btn-primary w-full btn-lg" style="justify-content:center;margin-top:24px" onclick="doRegister()">Criar conta grátis</button>
+      </div>
+      <p class="text-center text-muted text-sm mt-4">Já tem conta? <a href="#" onclick="showPage('login')" style="color:var(--blue-bright);text-decoration:none">Entrar</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: DASHBOARD ======================== -->
+<div id="page-dashboard" class="page">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="main-sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg width="18" height="18" viewBox="0 0 36 36" fill="none"><path d="M6 10h24M6 18h16M6 26h20" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="27" cy="25" r="7" stroke="white" stroke-width="2"/><path d="M32 30l3 3" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <span style="font-family:var(--font-display);font-weight:800;font-size:18px">DocFinder</span>
+    </div>
+    <nav style="flex:1">
+      <a class="nav-item active" onclick="showDashTab('main')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Início
+      </a>
+      <a class="nav-item" onclick="showPage('scan')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Escanear Documento
+      </a>
+      <a class="nav-item" onclick="showDashTab('docs')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Meus Documentos
+        <span class="nav-badge">3</span>
+      </a>
+      <a class="nav-item" onclick="showPage('chat')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Mensagens
+        <span class="nav-badge">2</span>
+      </a>
+      <a class="nav-item" onclick="showDashTab('settings')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configurações
+      </a>
+    </nav>
+    <div style="border-top:1px solid var(--border);padding-top:16px">
+      <div class="flex items-center gap-3 px-3 mb-3">
+        <div class="avatar-placeholder" style="width:36px;height:36px;font-size:13px">JV</div>
+        <div style="min-width:0">
+          <p class="font-medium text-sm" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">João Victor S.</p>
+          <p class="text-xs text-muted">conta verificada ✓</p>
+        </div>
+      </div>
+      <a class="nav-item" onclick="showPage('home');showToast('Até mais!','info')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="with-sidebar">
+    <!-- DASH HEADER -->
+    <div class="dash-header">
+      <div>
+        <h1 style="font-size:22px;margin-bottom:2px">Bom dia, João! 👋</h1>
+        <p class="text-muted text-sm">Você tem 2 novas mensagens e 1 correspondência nova</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="btn btn-outline btn-sm" style="position:relative" onclick="showToast('Sem novas notificações','info')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:var(--danger);border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg2)">3</span>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="showPage('scan')">+ Escanear</button>
+      </div>
+    </div>
+
+    <!-- DASH TABS CONTENT -->
+    <div id="dash-main" class="dash-content" style="padding-bottom:80px">
+      <!-- STATS GRID -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px">
+        <div class="stat-card">
+          <div class="flex justify-between items-start mb-3">
+            <div class="stat-icon" style="background:rgba(59,130,246,0.12)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue-bright)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <span class="badge badge-green text-xs">+2 hoje</span>
+          </div>
+          <div style="font-size:28px;font-weight:800;font-family:var(--font-display)">7</div>
+          <p class="text-muted text-sm mt-1">Documentos escaneados</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex justify-between items-start mb-3">
+            <div class="stat-icon" style="background:rgba(168,85,247,0.12)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span class="badge badge-purple text-xs">98% match</span>
+          </div>
+          <div style="font-size:28px;font-weight:800;font-family:var(--font-display)">3</div>
+          <p class="text-muted text-sm mt-1">Correspondências encontradas</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex justify-between items-start mb-3">
+            <div class="stat-icon" style="background:rgba(16,185,129,0.12)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="badge badge-green text-xs">meta atingida</span>
+          </div>
+          <div style="font-size:28px;font-weight:800;font-family:var(--font-display)">2</div>
+          <p class="text-muted text-sm mt-1">Documentos devolvidos</p>
+        </div>
+        <div class="stat-card">
+          <div class="flex justify-between items-start mb-3">
+            <div class="stat-icon" style="background:rgba(245,158,11,0.12)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <span class="badge badge-amber text-xs">2 não lidas</span>
+          </div>
+          <div style="font-size:28px;font-weight:800;font-family:var(--font-display)">5</div>
+          <p class="text-muted text-sm mt-1">Conversas ativas</p>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+        <!-- RECENT ACTIVITY -->
+        <div class="card">
+          <h3 style="font-size:16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+            Atividade recente
+            <button class="btn btn-ghost btn-sm text-blue">Ver tudo</button>
+          </h3>
+          <div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(59,130,246,0.12)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue-bright)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </div>
+              <div style="flex:1">
+                <p class="text-sm font-medium">CNH escaneada</p>
+                <p class="text-xs text-muted">João V. Santos — 98% compatível</p>
+              </div>
+              <span class="text-xs text-muted">Agora</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(16,185,129,0.12)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div style="flex:1">
+                <p class="text-sm font-medium">Documento devolvido</p>
+                <p class="text-xs text-muted">RG encontrado e entregue</p>
+              </div>
+              <span class="text-xs text-muted">2h atrás</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(168,85,247,0.12)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div style="flex:1">
+                <p class="text-sm font-medium">Nova mensagem recebida</p>
+                <p class="text-xs text-muted">Ana Lima enviou uma msg</p>
+              </div>
+              <span class="text-xs text-muted">5h atrás</span>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon" style="background:rgba(245,158,11,0.12)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <div style="flex:1">
+                <p class="text-sm font-medium">Perfil verificado</p>
+                <p class="text-xs text-muted">Seu perfil ganhou badge ✓</p>
+              </div>
+              <span class="text-xs text-muted">1d atrás</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="flex-col gap-4">
+          <div class="card" style="background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(168,85,247,0.1));border-color:rgba(100,130,255,0.2);cursor:pointer" onclick="showPage('scan')">
+            <div class="flex items-center gap-16">
+              <div>
+                <h3 style="font-size:17px;margin-bottom:6px">Escanear agora</h3>
+                <p class="text-muted text-sm">Encontrou um documento? Escaneie e ajude o dono a recuperá-lo.</p>
+                <button class="btn btn-primary btn-sm mt-4">Abrir scanner →</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="font-size:15px;margin-bottom:16px">Seu perfil</h3>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="avatar-placeholder" style="width:52px;height:52px;font-size:18px">JV</div>
+              <div>
+                <p class="font-medium">João Victor Santos</p>
+                <p class="text-sm text-muted">Maringá, PR</p>
+                <div class="verified-badge mt-1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Conta verificada
+                </div>
+              </div>
+            </div>
+            <div class="progress mb-2"><div class="progress-fill" style="width:75%"></div></div>
+            <p class="text-xs text-muted">Perfil 75% completo — adicione mais documentos para aumentar visibilidade</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCS TAB -->
+    <div id="dash-docs" class="dash-content" style="display:none;padding-bottom:80px">
+      <h2 style="font-size:22px;margin-bottom:24px">Meus Documentos</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+        <div class="card" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--blue-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div class="flex justify-between items-start mb-3">
+            <span class="badge badge-blue">CNH</span>
+            <span class="badge badge-green">Ativo</span>
+          </div>
+          <h3 style="font-size:16px;margin-bottom:4px">Carteira de Motorista</h3>
+          <p class="text-muted text-sm mb-4">Categoria B · Válida até 2028</p>
+          <div class="flex justify-between text-xs text-muted">
+            <span>Cadastrado em 10/01/2025</span>
+            <button class="btn btn-ghost" style="padding:0;font-size:12px;color:var(--blue-bright)">Editar</button>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--blue-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div class="flex justify-between items-start mb-3">
+            <span class="badge badge-purple">RG</span>
+            <span class="badge badge-green">Ativo</span>
+          </div>
+          <h3 style="font-size:16px;margin-bottom:4px">Registro Geral</h3>
+          <p class="text-muted text-sm mb-4">SSP/PR · N° ***.****.***-**</p>
+          <div class="flex justify-between text-xs text-muted">
+            <span>Cadastrado em 10/01/2025</span>
+            <button class="btn btn-ghost" style="padding:0;font-size:12px;color:var(--blue-bright)">Editar</button>
+          </div>
+        </div>
+        <div class="card" style="cursor:pointer;transition:all .3s;border-style:dashed" onmouseover="this.style.borderColor='var(--blue-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div class="flex-col items-center justify-center text-center" style="padding:16px">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--surface2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <p class="font-medium text-sm mb-1">Adicionar documento</p>
+            <p class="text-xs text-muted">Cadastre mais documentos para ser encontrado mais facilmente</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="dash-settings" class="dash-content" style="display:none;padding-bottom:80px">
+      <h2 style="font-size:22px;margin-bottom:28px">Configurações</h2>
+      <div style="max-width:600px">
+        <div class="settings-section">
+          <h3>Perfil</h3>
+          <div class="card" style="padding:24px">
+            <div class="flex items-center gap-16 mb-6">
+              <div class="avatar-placeholder" style="width:72px;height:72px;font-size:24px">JV</div>
+              <div>
+                <button class="btn btn-outline btn-sm" onclick="showToast('Funcionalidade disponível em breve','info')">Alterar foto</button>
+                <p class="text-xs text-muted mt-2">JPG ou PNG. Máx. 5MB.</p>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="input-group"><label>Nome</label><input class="input" value="João Victor Santos"></div>
+              <div class="input-group"><label>Email</label><input class="input" value="joao@email.com"></div>
+              <div class="input-group"><label>Cidade</label><input class="input" value="Maringá"></div>
+              <div class="input-group"><label>Estado</label><input class="input" value="PR"></div>
+            </div>
+            <button class="btn btn-primary btn-sm mt-4" onclick="showToast('Perfil salvo com sucesso!','success')">Salvar alterações</button>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>Privacidade</h3>
+          <div class="card" style="padding:0 24px">
+            <div class="settings-row">
+              <div class="settings-row-info"><h4>Mostrar perfil nas buscas</h4><p>Permite que outros usuários te encontrem ao escanear documentos</p></div>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div></label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-info"><h4>Ocultar número de telefone</h4><p>Exibe apenas os últimos 4 dígitos</p></div>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div></label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-info"><h4>Ocultar email</h4><p>Oculta parcialmente seu endereço de email</p></div>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div></label>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-info"><h4>Notificações por email</h4><p>Receba alertas quando documentos seus forem encontrados</p></div>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div></label>
+            </div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>Aparência</h3>
+          <div class="card" style="padding:0 24px">
+            <div class="settings-row">
+              <div class="settings-row-info"><h4>Tema escuro</h4><p>Interface com fundo escuro (atual)</p></div>
+              <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div></label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <div class="mobile-nav">
+    <div class="mobile-nav-items">
+      <div class="mobile-nav-item active" onclick="showDashTab('main');setMobileActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Início
+      </div>
+      <div class="mobile-nav-item" onclick="showPage('scan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Escanear
+      </div>
+      <div class="mobile-nav-item" onclick="showPage('chat')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Chat
+      </div>
+      <div class="mobile-nav-item" onclick="showDashTab('settings');setMobileActive(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Config
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: SCAN ======================== -->
+<div id="page-scan" class="page">
+  <div style="min-height:100vh;padding:40px 24px">
+    <div style="max-width:700px;margin:0 auto">
+      <button class="btn btn-ghost btn-sm mb-6" onclick="showPage('dashboard')" style="display:flex;align-items:center;gap:6px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar
+      </button>
+      <h1 style="font-size:30px;margin-bottom:8px">Escanear Documento</h1>
+      <p class="text-muted mb-8">Fotografe o documento encontrado. Nossa IA identificará o dono.</p>
+
+      <!-- SCAN STATES -->
+      <div id="scan-upload-state">
+        <div class="scan-zone" id="scan-zone" onclick="document.getElementById('scan-file').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+          <input type="file" id="scan-file" accept="image/*" onchange="startScan(this)">
+          <div class="scanner-overlay mb-6">
+            <div class="scanner-bg">
+              <div style="text-align:center;color:var(--text3)">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 8px;display:block"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <p class="text-xs">Área de escaneamento</p>
+              </div>
+            </div>
+            <div class="scan-corner tl"></div>
+            <div class="scan-corner tr"></div>
+            <div class="scan-corner bl"></div>
+            <div class="scan-corner br"></div>
+          </div>
+          <h3 style="font-size:18px;margin-bottom:8px">Clique ou arraste uma imagem</h3>
+          <p class="text-muted text-sm mb-6">Suporta JPG, PNG, HEIC. Máx 20MB</p>
+          <div class="flex gap-3 justify-center">
+            <button class="btn btn-primary" onclick="event.stopPropagation();document.getElementById('scan-file').click()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Tirar Foto / Upload
+            </button>
+            <button class="btn btn-outline" onclick="event.stopPropagation();simulateScan()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Demo IA
+            </button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px">
+          <div class="card text-center" style="padding:16px">
+            <div style="width:40px;height:40px;background:rgba(59,130,246,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue-bright)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+            </div>
+            <p class="text-sm font-medium">RG</p>
+            <p class="text-xs text-muted">Registro Geral</p>
+          </div>
+          <div class="card text-center" style="padding:16px">
+            <div style="width:40px;height:40px;background:rgba(168,85,247,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple-bright)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <p class="text-sm font-medium">CNH</p>
+            <p class="text-xs text-muted">Habilitação</p>
+          </div>
+          <div class="card text-center" style="padding:16px">
+            <div style="width:40px;height:40px;background:rgba(34,211,238,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <p class="text-sm font-medium">Passaporte</p>
+            <p class="text-xs text-muted">Documento viagem</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYZING STATE -->
+      <div id="scan-analyzing-state" style="display:none">
+        <div class="card text-center" style="padding:48px;background:linear-gradient(135deg,rgba(59,130,246,0.05),rgba(168,85,247,0.05))">
+          <div class="scanner-overlay mb-6" style="margin:0 auto">
+            <div class="scanner-bg" id="scan-preview-container">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/></svg>
+            </div>
+            <div class="scan-corner tl"></div>
+            <div class="scan-corner tr"></div>
+            <div class="scan-corner bl"></div>
+            <div class="scan-corner br"></div>
+            <div class="scan-line"></div>
+          </div>
+          <div id="scan-progress-area">
+            <p class="text-cyan font-medium mb-2" id="scan-status-text">Inicializando OCR...</p>
+            <div class="progress" style="max-width:320px;margin:0 auto 12px">
+              <div class="progress-fill" id="scan-progress-bar" style="width:0%"></div>
+            </div>
+            <p class="text-xs text-muted" id="scan-step-text">Preparando análise de imagem</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT STATE -->
+      <div id="scan-result-state" style="display:none">
+        <div class="card mb-6" style="background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.08));border-color:rgba(16,185,129,0.3)">
+          <div class="flex items-center gap-3 mb-4">
+            <div style="width:44px;height:44px;background:rgba(16,185,129,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <p class="font-medium text-success">Documento identificado com sucesso!</p>
+              <p class="text-xs text-muted">Análise concluída em 2.3 segundos</p>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;background:var(--bg3);border-radius:var(--r3);padding:16px">
+            <div>
+              <p class="text-xs text-muted mb-1">Nome detectado</p>
+              <p class="font-medium text-sm">João Victor Santos</p>
+            </div>
+            <div>
+              <p class="text-xs text-muted mb-1">Tipo</p>
+              <p class="font-medium text-sm">CNH — Cat. B</p>
+            </div>
+            <div>
+              <p class="text-xs text-muted mb-1">Confiança da IA</p>
+              <p class="font-medium text-sm text-success">97.4%</p>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-xl w-full" style="justify-content:center" onclick="showPage('results')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Buscar possíveis donos
+        </button>
+        <button class="btn btn-ghost w-full btn-sm mt-3" style="justify-content:center" onclick="resetScan()">Escanear outro documento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: RESULTS ======================== -->
+<div id="page-results" class="page">
+  <div style="min-height:100vh;padding:40px 24px">
+    <div style="max-width:800px;margin:0 auto">
+      <button class="btn btn-ghost btn-sm mb-4" onclick="showPage('scan')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Voltar
+      </button>
+      <div class="flex items-center justify-between mb-2">
+        <h1 style="font-size:26px">Resultados encontrados</h1>
+        <span class="badge badge-blue">4 perfis</span>
+      </div>
+      <p class="text-muted mb-6">Baseado em "João Victor Santos" — CNH detectada</p>
+
+      <!-- FILTERS -->
+      <div class="flex gap-3 mb-6 flex-wrap">
+        <select class="input" style="width:auto;padding:8px 12px;font-size:13px">
+          <option>Todos os estados</option>
+          <option>SP</option><option>PR</option><option>MG</option><option>RJ</option>
+        </select>
+        <select class="input" style="width:auto;padding:8px 12px;font-size:13px">
+          <option>Qualquer idade</option>
+          <option>18-25</option><option>26-35</option><option>36-50</option>
+        </select>
+        <select class="input" style="width:auto;padding:8px 12px;font-size:13px">
+          <option>Compatibilidade ↓</option>
+          <option>Mais recentes</option>
+        </select>
+      </div>
+
+      <!-- RESULT CARDS -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="result-card" style="border-color:rgba(100,180,255,0.3);background:linear-gradient(135deg,rgba(59,130,246,0.05),rgba(168,85,247,0.05))">
+          <div class="flex items-center gap-4">
+            <div class="avatar-placeholder" style="width:60px;height:60px;font-size:20px;flex-shrink:0">JV</div>
+            <div style="flex:1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 style="font-size:17px">João Victor S.</h3>
+                <div class="verified-badge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Verificado
+                </div>
+                <span class="badge badge-green" style="margin-left:auto">98% match</span>
+              </div>
+              <p class="text-muted text-sm mb-2">24 anos · Maringá, PR</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;background:var(--bg3);border-radius:var(--r3);padding:12px;font-size:12px">
+                <div><p class="text-muted mb-1">Telefone</p><p class="font-medium">(44) 9****-5678</p></div>
+                <div><p class="text-muted mb-1">Email</p><p class="font-medium">joa***@gmail.com</p></div>
+                <div><p class="text-muted mb-1">CPF</p><p class="font-medium">***.456.***-**</p></div>
+              </div>
+              <div class="compat-bar mt-3"><div class="compat-fill" style="width:98%"></div></div>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-4">
+            <button class="btn btn-primary btn-sm" onclick="showPage('chat');showToast('Abrindo chat seguro...','info')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Entrar em contato
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('Perfil salvo nos favoritos','success')">Ver perfil completo</button>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="flex items-center gap-4">
+            <div class="avatar-placeholder" style="width:60px;height:60px;font-size:20px;flex-shrink:0;background:linear-gradient(135deg,var(--purple),var(--cyan))">JS</div>
+            <div style="flex:1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 style="font-size:17px">João V. da Silva</h3>
+                <span class="badge badge-blue" style="margin-left:auto">73% match</span>
+              </div>
+              <p class="text-muted text-sm mb-2">31 anos · São Paulo, SP</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;background:var(--bg3);border-radius:var(--r3);padding:12px;font-size:12px">
+                <div><p class="text-muted mb-1">Telefone</p><p class="font-medium">(11) 9****-2341</p></div>
+                <div><p class="text-muted mb-1">Email</p><p class="font-medium">joa***@hotmail.com</p></div>
+                <div><p class="text-muted mb-1">CPF</p><p class="font-medium">***.789.***-**</p></div>
+              </div>
+              <div class="compat-bar mt-3"><div class="compat-fill" style="width:73%"></div></div>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-4">
+            <button class="btn btn-primary btn-sm" onclick="showPage('chat');showToast('Abrindo chat seguro...','info')">Entrar em contato</button>
+            <button class="btn btn-outline btn-sm">Ver perfil</button>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="flex items-center gap-4">
+            <div class="avatar-placeholder" style="width:60px;height:60px;font-size:20px;flex-shrink:0;background:linear-gradient(135deg,var(--cyan),var(--success))">JO</div>
+            <div style="flex:1">
+              <div class="flex items-center gap-2 mb-1">
+                <h3 style="font-size:17px">João Victor O.</h3>
+                <span class="badge badge-amber" style="margin-left:auto">61% match</span>
+              </div>
+              <p class="text-muted text-sm mb-2">19 anos · Curitiba, PR</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;background:var(--bg3);border-radius:var(--r3);padding:12px;font-size:12px">
+                <div><p class="text-muted mb-1">Telefone</p><p class="font-medium">(41) 9****-9012</p></div>
+                <div><p class="text-muted mb-1">Email</p><p class="font-medium">jv***@outlook.com</p></div>
+                <div><p class="text-muted mb-1">CPF</p><p class="font-medium">***.123.***-**</p></div>
+              </div>
+              <div class="compat-bar mt-3"><div class="compat-fill" style="width:61%"></div></div>
+            </div>
+          </div>
+          <div class="flex gap-3 mt-4">
+            <button class="btn btn-primary btn-sm" onclick="showPage('chat')">Entrar em contato</button>
+            <button class="btn btn-outline btn-sm">Ver perfil</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="flex items-center justify-center gap-3 mt-8">
+        <button class="btn btn-outline btn-sm">← Anterior</button>
+        <button class="btn btn-primary btn-sm">1</button>
+        <button class="btn btn-outline btn-sm">2</button>
+        <button class="btn btn-outline btn-sm">3</button>
+        <button class="btn btn-outline btn-sm">Próxima →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: CHAT ======================== -->
+<div id="page-chat" class="page">
+  <div style="display:flex;height:100vh;overflow:hidden">
+    <!-- CONTACTS SIDEBAR -->
+    <div class="chat-sidebar">
+      <div style="padding:20px;border-bottom:1px solid var(--border)">
+        <div class="flex items-center justify-between mb-4">
+          <h2 style="font-size:18px">Mensagens</h2>
+          <button class="btn btn-ghost btn-sm" onclick="showPage('dashboard')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <input class="input" type="text" placeholder="Buscar conversa...">
+      </div>
+      <div>
+        <div class="chat-contact active" onclick="selectChat(this,'João Victor S.')">
+          <div class="avatar-placeholder" style="width:44px;height:44px;font-size:15px;flex-shrink:0">JV</div>
+          <div style="flex:1;min-width:0">
+            <div class="flex justify-between">
+              <p class="font-medium text-sm">João Victor S.</p>
+              <span class="text-xs text-muted">Agora</span>
+            </div>
+            <p class="text-xs text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Encontrei sua CNH no metrô...</p>
+          </div>
+          <span style="width:8px;height:8px;background:var(--blue);border-radius:50%;flex-shrink:0"></span>
+        </div>
+        <div class="chat-contact" onclick="selectChat(this,'Ana Lima')">
+          <div class="avatar-placeholder" style="width:44px;height:44px;font-size:15px;flex-shrink:0;background:linear-gradient(135deg,var(--purple),var(--cyan))">AL</div>
+          <div style="flex:1;min-width:0">
+            <div class="flex justify-between">
+              <p class="font-medium text-sm">Ana Lima</p>
+              <span class="text-xs text-muted">2h</span>
+            </div>
+            <p class="text-xs text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Obrigada pela devolução! 🙏</p>
+          </div>
+        </div>
+        <div class="chat-contact" onclick="selectChat(this,'Carlos M.')">
+          <div class="avatar-placeholder" style="width:44px;height:44px;font-size:15px;flex-shrink:0;background:linear-gradient(135deg,var(--cyan),var(--success))">CM</div>
+          <div style="flex:1;min-width:0">
+            <div class="flex justify-between">
+              <p class="font-medium text-sm">Carlos M.</p>
+              <span class="text-xs text-muted">1d</span>
+            </div>
+            <p class="text-xs text-muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Podemos marcar amanhã?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT MAIN -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="avatar-placeholder" style="width:40px;height:40px;font-size:14px;flex-shrink:0" id="chat-avatar">JV</div>
+        <div style="flex:1">
+          <p class="font-medium" id="chat-name">João Victor S.</p>
+          <div class="flex items-center gap-2">
+            <span class="status-dot status-online"></span>
+            <span class="text-xs text-muted" id="chat-status">Online agora</span>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="showToast('Localização compartilhada com segurança','success')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ponto de encontro
+        </button>
+      </div>
+
+      <div class="chat-messages" id="chat-messages">
+        <div style="text-align:center;margin-bottom:24px">
+          <span style="font-size:12px;color:var(--text3);background:var(--surface);padding:4px 12px;border-radius:999px">Hoje, 14:32</span>
+        </div>
+        <div class="chat-msg other">
+          <div class="avatar-placeholder" style="width:32px;height:32px;font-size:11px;flex-shrink:0">JV</div>
+          <div>
+            <div class="chat-bubble">Olá! Encontrei uma CNH que pode ser sua. O nome no documento é João Victor Santos.</div>
+            <span class="text-xs text-muted" style="margin-top:4px;display:block">14:32</span>
+          </div>
+        </div>
+        <div class="chat-msg me">
+          <div class="avatar-placeholder" style="width:32px;height:32px;font-size:11px;flex-shrink:0">EU</div>
+          <div>
+            <div class="chat-bubble">Oi! Sim, sou eu mesmo. Perdi minha CNH ontem no metrô. Pode descrever o documento?</div>
+            <span class="text-xs text-muted" style="margin-top:4px;display:block;text-align:right">14:35 ✓✓</span>
+          </div>
+        </div>
+        <div class="chat-msg other">
+          <div class="avatar-placeholder" style="width:32px;height:32px;font-size:11px;flex-shrink:0">JV</div>
+          <div>
+            <div class="chat-bubble">CNH categoria B, validade 2028. Tem um adesivo azul no canto. Consigo devolver ainda hoje!</div>
+            <span class="text-xs text-muted" style="margin-top:4px;display:block">14:37</span>
+          </div>
+        </div>
+        <div class="chat-msg me">
+          <div class="avatar-placeholder" style="width:32px;height:32px;font-size:11px;flex-shrink:0">EU</div>
+          <div>
+            <div class="chat-bubble">Perfeito! É minha mesmo! Podemos nos encontrar no Shopping Avenida Center?</div>
+            <span class="text-xs text-muted" style="margin-top:4px;display:block;text-align:right">14:40 ✓✓</span>
+          </div>
+        </div>
+        <div id="typing-indicator" style="display:none">
+          <div class="chat-msg other">
+            <div class="avatar-placeholder" style="width:32px;height:32px;font-size:11px;flex-shrink:0">JV</div>
+            <div class="chat-bubble" style="padding:10px 14px">
+              <div class="flex gap-1 items-center">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-bar">
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Upload de imagem disponível em breve','info')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <input class="chat-input" type="text" placeholder="Digite uma mensagem..." id="chat-input-field" onkeydown="if(event.key==='Enter')sendChatMessage()">
+        <button class="btn btn-primary btn-sm" onclick="sendChatMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: 404 ======================== -->
+<div id="page-404" class="page">
+  <div class="page-404">
+    <div style="font-family:var(--font-display);font-size:120px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px">404</div>
+    <h2 style="font-size:28px;margin-bottom:12px">Página não encontrada</h2>
+    <p class="text-muted mb-8" style="max-width:400px">Parece que você se perdeu... como um documento. Mas não se preocupe, nós achamos de volta!</p>
+    <button class="btn btn-primary btn-lg" onclick="showPage('home')">← Voltar ao início</button>
+  </div>
+</div>
+
+<script>
+// ========== STATE ==========
+let currentPage = 'home';
+let isLoggedIn = false;
+
+// ========== PAGE ROUTER ==========
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + page);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+    currentPage = page;
+  } else {
+    document.getElementById('page-404').classList.add('active');
+  }
+}
+
+// ========== AUTH ==========
+function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) { showToast('Preencha todos os campos', 'error'); return; }
+  showToast('Entrando...', 'info');
+  setTimeout(() => {
+    isLoggedIn = true;
+    showPage('dashboard');
+    showToast('Bem-vindo de volta, João! 👋', 'success');
+  }, 1200);
+}
+
+function doRegister() {
+  showToast('Criando sua conta...', 'info');
+  setTimeout(() => {
+    isLoggedIn = true;
+    showPage('dashboard');
+    showToast('Conta criada com sucesso! ✓', 'success');
+  }, 1500);
+}
+
+// ========== TOAST ==========
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const icons = {
+    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+    error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+  };
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<div class="toast-icon">${icons[type]}</div><div style="flex:1;font-size:14px">${msg}</div>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('removing');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+// ========== DASH TABS ==========
+function showDashTab(tab) {
+  ['main','docs','settings'].forEach(t => {
+    const el = document.getElementById('dash-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('#page-dashboard .nav-item').forEach(item => item.classList.remove('active'));
+  const map = { main: 0, docs: 2, settings: 4 };
+  const items = document.querySelectorAll('#page-dashboard .nav-item');
+  if (items[map[tab]]) items[map[tab]].classList.add('active');
+}
+
+function setMobileActive(el) {
+  document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ========== SCAN ==========
+function simulateScan() {
+  document.getElementById('scan-upload-state').style.display = 'none';
+  document.getElementById('scan-analyzing-state').style.display = 'block';
+  runScanAnimation();
+}
+
+function startScan(input) {
+  if (!input.files[0]) return;
+  simulateScan();
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:10px';
+    const c = document.getElementById('scan-preview-container');
+    c.innerHTML = '';
+    c.appendChild(img);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('scan-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const fakeInput = { files: [file] };
+    startScan(fakeInput);
+  }
+}
+
+const scanSteps = [
+  ['Inicializando OCR...', 'Preparando análise de imagem', 8],
+  ['Detectando bordas...', 'Identificando contornos do documento', 20],
+  ['Extraindo texto...', 'Processando campos de texto com IA', 40],
+  ['Identificando tipo...', 'Classificando modelo de documento', 58],
+  ['Validando dados...', 'Verificando autenticidade dos campos', 72],
+  ['Buscando no banco...', 'Consultando perfis cadastrados', 88],
+  ['Análise concluída!', 'Match encontrado com 97.4% de confiança', 100]
+];
+
+function runScanAnimation() {
+  let step = 0;
+  const run = () => {
+    if (step >= scanSteps.length) {
+      setTimeout(() => {
+        document.getElementById('scan-analyzing-state').style.display = 'none';
+        document.getElementById('scan-result-state').style.display = 'block';
+        showToast('Documento identificado! 97.4% confiança', 'success');
+      }, 600);
+      return;
+    }
+    const [status, detail, pct] = scanSteps[step];
+    document.getElementById('scan-status-text').textContent = status;
+    document.getElementById('scan-step-text').textContent = detail;
+    document.getElementById('scan-progress-bar').style.width = pct + '%';
+    step++;
+    setTimeout(run, 480);
+  };
+  run();
+}
+
+function resetScan() {
+  document.getElementById('scan-result-state').style.display = 'none';
+  document.getElementById('scan-analyzing-state').style.display = 'none';
+  document.getElementById('scan-upload-state').style.display = 'block';
+  document.getElementById('scan-progress-bar').style.width = '0%';
+  document.getElementById('scan-preview-container').innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/></svg>';
+}
+
+// ========== PASSWORD ==========
+function togglePass(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function checkStrength(val) {
+  const fill = document.getElementById('strength-fill');
+  const label = document.getElementById('strength-label');
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const configs = [
+    { w:'0%', c:'var(--danger)', t:'Digite uma senha' },
+    { w:'25%', c:'var(--danger)', t:'Fraca' },
+    { w:'50%', c:'var(--warning)', t:'Razoável' },
+    { w:'75%', c:'var(--blue)', t:'Boa' },
+    { w:'100%', c:'var(--success)', t:'Forte 💪' }
+  ];
+  const cfg = configs[score];
+  fill.style.width = cfg.w;
+  fill.style.background = cfg.c;
+  label.textContent = cfg.t;
+  label.style.color = cfg.c;
+}
+
+// ========== PIC UPLOAD ==========
+function triggerPicUpload() {
+  document.getElementById('pic-input').click();
+}
+
+function previewPic(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const div = document.getElementById('pic-upload');
+    div.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    showToast('Foto atualizada!', 'success');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ========== CHAT ==========
+const chatReplies = [
+  'Claro! Posso te encontrar no Shopping Avenida Center às 15h.',
+  'Ótimo! Fica na entrada principal, certo?',
+  'Perfeito! Estarei lá. Obrigado por devolver 🙏',
+  'Não tem problema! Que bom que a plataforma ajudou.',
+  'Com certeza! Até mais tarde então. 👋'
+];
+let replyIndex = 0;
+
+function sendChatMessage() {
+  const input = document.getElementById('chat-input-field');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMessage(msg, 'me');
+  document.getElementById('typing-indicator').style.display = 'block';
+  scrollChat();
+  setTimeout(() => {
+    document.getElementById('typing-indicator').style.display = 'none';
+    const reply = chatReplies[replyIndex % chatReplies.length];
+    replyIndex++;
+    addMessage(reply, 'other');
+    scrollChat();
+  }, 1800);
+}
+
+function addMessage(text, type) {
+  const container = document.getElementById('chat-messages');
+  const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const initials = type === 'me' ? 'EU' : document.getElementById('chat-avatar').textContent;
+  const div = document.createElement('div');
+  div.className = `chat-msg ${type}`;
+  const checkmarks = type === 'me' ? ' ✓✓' : '';
+  div.innerHTML = `
+    <div class="avatar-placeholder" style="width:32px;height:32px;font-size:11px;flex-shrink:0">${initials}</div>
+    <div>
+      <div class="chat-bubble">${text}</div>
+      <span class="text-xs text-muted" style="margin-top:4px;display:block;${type==='me'?'text-align:right':''}">${time}${checkmarks}</span>
+    </div>`;
+  const indicator = document.getElementById('typing-indicator');
+  container.insertBefore(div, indicator);
+  scrollChat();
+}
+
+function scrollChat() {
+  const c = document.getElementById('chat-messages');
+  c.scrollTop = c.scrollHeight;
+}
+
+function selectChat(el, name) {
+  document.querySelectorAll('.chat-contact').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2);
+  document.getElementById('chat-avatar').textContent = initials;
+  document.getElementById('chat-name').textContent = name;
+}
+
+// ========== COUNTERS ==========
+function animateCounter(id, target, suffix, duration) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = Date.now();
+  const tick = () => {
+    const pct = Math.min((Date.now() - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - pct, 3);
+    el.textContent = Math.round(target * ease).toLocaleString('pt-BR') + (suffix || '');
+    if (pct < 1) requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+    setTimeout(() => {
+      animateCounter('counter-1', 12743, '+', 2000);
+      animateCounter('counter-2', 8921, '+', 2000);
+      animateCounter('counter-3', 94, '%', 1800);
+    }, 300);
+  }, 1800);
+});
+</script>
+</body>
+</html>
